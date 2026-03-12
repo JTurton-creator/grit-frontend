@@ -1,6 +1,82 @@
 import { useState, useEffect, useRef } from "react";
 
 // ============================================================
+// LOGIN GATE
+// ============================================================
+const LOGIN_PASSWORD = "grit2024";
+
+function LoginScreen({ onLogin }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  const handleSubmit = () => {
+    if (password === LOGIN_PASSWORD) {
+      onLogin();
+    } else {
+      setError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh", background: "#0a0a0a", display: "flex",
+      alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif"
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@300;400;500&display=swap');
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+        .shake { animation: shake 0.4s ease; }
+      `}</style>
+      <div style={{
+        background: "#141414", border: "1px solid #2a2a2a", borderRadius: "16px",
+        padding: "48px 40px", width: "100%", maxWidth: "380px", textAlign: "center"
+      }}>
+        <div style={{
+          fontFamily: "'Syne', sans-serif", fontSize: "32px", fontWeight: 800,
+          letterSpacing: "-1px", marginBottom: "8px", color: "#f5f2ec"
+        }}>
+          GR<span style={{ color: "#e85d04" }}>IT</span>
+        </div>
+        <div style={{ color: "#6b6b6b", fontSize: "14px", marginBottom: "32px" }}>
+          Recruiting Platform — Private Access
+        </div>
+        <div className={shake ? "shake" : ""}>
+          <input
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={e => { setPassword(e.target.value); setError(false); }}
+            onKeyDown={e => e.key === "Enter" && handleSubmit()}
+            style={{
+              width: "100%", padding: "12px 16px", background: "#1a1a1a",
+              border: `1px solid ${error ? "#ef4444" : "#2a2a2a"}`, borderRadius: "8px",
+              color: "#f5f2ec", fontSize: "15px", outline: "none",
+              marginBottom: "12px", boxSizing: "border-box"
+            }}
+          />
+          {error && <div style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>
+            Incorrect password
+          </div>}
+          <button
+            onClick={handleSubmit}
+            style={{
+              width: "100%", padding: "12px", background: "#e85d04", border: "none",
+              borderRadius: "8px", color: "white", fontSize: "15px", fontWeight: 600,
+              cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
+            }}
+          >
+            Enter GRIT
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // CONFIG — point this at your backend URL
 // ============================================================
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -758,9 +834,12 @@ function ColdEmailPage({ showToast }) {
 // APP ROOT
 // ============================================================
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem("grit_auth") === "true");
   const [tab, setTab] = useState("dashboard");
   const [toast, setToast] = useState(null);
   function showToast(msg, type = "success") { setToast({ msg, type }); }
+
+  if (!loggedIn) return <LoginScreen onLogin={() => { sessionStorage.setItem("grit_auth", "true"); setLoggedIn(true); }} />;
 
   const TABS = [
     { id: "dashboard", label: "Dashboard",            icon: "📊" },
