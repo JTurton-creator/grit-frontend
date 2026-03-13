@@ -79,7 +79,7 @@ function LoginScreen({ onLogin }) {
 // ============================================================
 // CONFIG — point this at your backend URL
 // ============================================================
-const API = "https://grit-api-production.up.railway.app";
+const API = "https://grit-api-ohoa.onrender.com";
 
 async function api(path, method = "GET", body = null) {
   const opts = { method, headers: { "Content-Type": "application/json" } };
