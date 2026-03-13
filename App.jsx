@@ -1,9 +1,85 @@
 import { useState, useEffect, useRef } from "react";
 
 // ============================================================
+// LOGIN GATE
+// ============================================================
+const LOGIN_PASSWORD = "grit2024";
+
+function LoginScreen({ onLogin }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  const handleSubmit = () => {
+    if (password === LOGIN_PASSWORD) {
+      onLogin();
+    } else {
+      setError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh", background: "#f8faf8", display: "flex",
+      alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif"
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@300;400;500&display=swap');
+        @keyframes shake { 0%,100%{transform:translateX(0)} 10%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+        .shake { animation: shake 0.4s ease; }
+      `}</style>
+      <div style={{
+        background: "#ffffff", border: "1px solid #c8dfc8", borderRadius: "16px",
+        padding: "48px 40px", width: "100%", maxWidth: "380px", textAlign: "center"
+      }}>
+        <div style={{
+          fontFamily: "'Syne', sans-serif", fontSize: "32px", fontWeight: 800,
+          letterSpacing: "-1px", marginBottom: "8px", color: "#f5f2ec"
+        }}>
+          GR<span style={{ color: "#1a4a2e" }}>IT</span>
+        </div>
+        <div style={{ color: "#6b6b6b", fontSize: "14px", marginBottom: "32px" }}>
+          Recruiting Platform — Private Access
+        </div>
+        <div className={shake ? "shake" : ""}>
+          <input
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={e => { setPassword(e.target.value); setError(false); }}
+            onKeyDown={e => e.key === "Enter" && handleSubmit()}
+            style={{
+              width: "100%", padding: "12px 16px", background: "#f0f5f0",
+              border: `1px solid ${error ? "#ef4444" : "#2a2a2a"}`, borderRadius: "8px",
+              color: "#f5f2ec", fontSize: "15px", outline: "none",
+              marginBottom: "12px", boxSizing: "border-box"
+            }}
+          />
+          {error && <div style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>
+            Incorrect password
+          </div>}
+          <button
+            onClick={handleSubmit}
+            style={{
+              width: "100%", padding: "12px", background: "#1a4a2e", border: "none",
+              borderRadius: "8px", color: "white", fontSize: "15px", fontWeight: 600,
+              cursor: "pointer", fontFamily: "'DM Sans', sans-serif"
+            }}
+          >
+            Enter GRIT
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // CONFIG — point this at your backend URL
 // ============================================================
-const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API = "https://grit-api-production.up.railway.app";
 
 async function api(path, method = "GET", body = null) {
   const opts = { method, headers: { "Content-Type": "application/json" } };
@@ -21,13 +97,13 @@ const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --black: #0a0a0a; --white: #f5f2ec; --orange: #e85d04; --amber: #f48c06;
-    --muted: #6b6b6b; --card: #141414; --border: #2a2a2a;
+    --black: #f8faf8; --white: #1a2e1a; --orange: #1a4a2e; --amber: #2d6a4f;
+    --muted: #4a6741; --card: #ffffff; --border: #c8dfc8;
     --success: #22c55e; --warn: #f59e0b; --danger: #ef4444; --blue: #3b82f6;
   }
   body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; }
   .app { min-height: 100vh; display: flex; flex-direction: column; }
-  .nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; background:rgba(10,10,10,0.96); backdrop-filter:blur(12px); }
+  .nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; background:rgba(248,250,248,0.96); backdrop-filter:blur(12px); }
   .logo { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; letter-spacing:-1px; }
   .logo span { color:var(--orange); }
   .nav-tabs { display:flex; gap:4px; flex-wrap:wrap; }
@@ -47,10 +123,10 @@ const styles = `
   .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
   .form-group { margin-bottom:14px; }
   .form-label { display:block; font-size:11px; font-weight:500; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px; }
-  .form-input,.form-select,.form-textarea { width:100%; padding:9px 13px; background:#1a1a1a; border:1px solid var(--border); border-radius:8px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:14px; transition:border-color 0.2s; outline:none; }
+  .form-input,.form-select,.form-textarea { width:100%; padding:9px 13px; background:#f0f5f0; border:1px solid var(--border); border-radius:8px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:14px; transition:border-color 0.2s; outline:none; }
   .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--orange); }
   .form-textarea { resize:vertical; min-height:100px; }
-  .form-select option { background:#1a1a1a; }
+  .form-select option { background:#f0f5f0; }
   .form-hint { font-size:11px; color:var(--muted); margin-top:4px; }
   .btn { padding:9px 20px; border-radius:8px; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; }
   .btn-primary { background:var(--orange); color:white; }
@@ -85,7 +161,7 @@ const styles = `
   .score-bar-track { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
   .score-bar-fill { height:100%; border-radius:2px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
   .breakdown-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
-  .breakdown-item { background:#1a1a1a; border-radius:8px; padding:10px; text-align:center; border:1px solid var(--border); }
+  .breakdown-item { background:#f0f5f0; border-radius:8px; padding:10px; text-align:center; border:1px solid var(--border); }
   .breakdown-score { font-family:'Syne',sans-serif; font-weight:800; font-size:20px; }
   .breakdown-max { font-size:10px; color:var(--muted); }
   .breakdown-label { font-size:10px; color:var(--muted); margin-top:3px; }
@@ -149,7 +225,7 @@ const styles = `
   .rec-maybe{background:rgba(245,158,11,0.2);color:var(--warn);border:1px solid rgba(245,158,11,0.4);padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;}
   .rec-no{background:rgba(239,68,68,0.2);color:var(--danger);border:1px solid rgba(239,68,68,0.4);padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;}
   @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
-  .fee-banner { background: linear-gradient(135deg, rgba(232,93,4,0.12), rgba(244,140,6,0.08)); border: 1px solid rgba(232,93,4,0.35); border-radius: 12px; padding: 20px 24px; display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .fee-banner { background: linear-gradient(135deg, rgba(26,74,46,0.12), rgba(45,106,79,0.08)); border: 1px solid rgba(26,74,46,0.35); border-radius: 12px; padding: 20px 24px; display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
   .fee-amount { font-family:'Syne',sans-serif; font-size:38px; font-weight:800; color:var(--orange); }
   .placement-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid #1c1c1c; }
   .placement-row:last-child { border-bottom:none; }
@@ -160,7 +236,7 @@ const styles = `
 // ============================================================
 function ScoreRing({ score, size = 64 }) {
   const r = size / 2 - 6, circ = 2 * Math.PI * r, fill = (score / 100) * circ;
-  const color = score >= 75 ? "#22c55e" : score >= 50 ? "#f48c06" : "#ef4444";
+  const color = score >= 75 ? "#22c55e" : score >= 50 ? "#2d6a4f" : "#ef4444";
   return (
     <div className="score-ring" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)", position: "absolute" }}>
@@ -175,7 +251,7 @@ function ScoreRing({ score, size = 64 }) {
 
 function ScoreBar({ label, score, max }) {
   const pct = Math.round((score / max) * 100);
-  const c = pct >= 75 ? "#22c55e" : pct >= 50 ? "#f48c06" : "#ef4444";
+  const c = pct >= 75 ? "#22c55e" : pct >= 50 ? "#2d6a4f" : "#ef4444";
   return (
     <div className="score-bar-wrap">
       <div className="score-bar-label"><span>{label}</span><span>{score}/{max}</span></div>
@@ -440,9 +516,9 @@ function PaymentsPage({ showToast }) {
               <div style={{background:"rgba(232,93,4,0.08)",border:"1px solid rgba(232,93,4,0.25)",borderRadius:8,padding:"10px 14px",marginBottom:14}}>
                 <span className="text-muted text-sm">Estimated fee: </span>
                 <span style={{fontWeight:700,color:"var(--orange)"}}>
-                  ${Math.round(Number(form.annualSalary)*0.20).toLocaleString()}
+                  ${Math.round(Number(form.annualSalary)*0.10).toLocaleString()}
                 </span>
-                <span className="text-muted text-sm"> (20%)</span>
+                <span className="text-muted text-sm"> (10%)</span>
               </div>
             )}
             <button className="btn btn-primary btn-full" onClick={submitPlacement}
@@ -758,9 +834,12 @@ function ColdEmailPage({ showToast }) {
 // APP ROOT
 // ============================================================
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(() => sessionStorage.getItem("grit_auth") === "true");
   const [tab, setTab] = useState("dashboard");
   const [toast, setToast] = useState(null);
   function showToast(msg, type = "success") { setToast({ msg, type }); }
+
+  if (!loggedIn) return <LoginScreen onLogin={() => { sessionStorage.setItem("grit_auth", "true"); setLoggedIn(true); }} />;
 
   const TABS = [
     { id: "dashboard", label: "Dashboard",            icon: "📊" },
